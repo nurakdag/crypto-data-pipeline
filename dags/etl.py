@@ -48,11 +48,7 @@ with DAG(
     
     @task()
     def upload_raw_to_s3(data_trending_coins):
-        """Raw verileri S3'e yükler."""
-       
         s3_hook = S3Hook(aws_conn_id=S3_CONN_ID)
-        
-        
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         key = f'raw/coingecko_trending_coins_{timestamp}.json'
         json_data = json.dumps(data_trending_coins)
