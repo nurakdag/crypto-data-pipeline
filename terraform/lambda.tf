@@ -1,17 +1,23 @@
 ##############################################################################
 # Lambda Function & Layer
 #
-# Lambda fonksiyonu + pandas/pyarrow icin layer tanimlamalari.
-#
 # Lambda Layer nedir?
 #   Lambda'nin varsayilan runtime'inda pandas ve pyarrow YOK.
 #   Layer, bu kutuphaneleri Lambda'ya eklememizi saglar.
-#   Boylece her deploy'da 50MB+ kutuphane yuklemek zorunda kalmayiz.
 #
-# Deployment akisi:
-#   1. handler.py zip'lenir (archive_file ile)
-#   2. Lambda function olusturulur
-#   3. Layer ARN olarak eklenir (pandas + pyarrow)
+# Biz AWS'nin HAZIR managed layer'ini kullaniyoruz (AWSSDKPandas).
+#   - AWS bunu her region icin yayinliyor
+#   - Icinde pandas, pyarrow, numpy ve aws-sdk-pandas (awswrangler) var
+#   - Biz build etmiyoruz, AWS maintain ediyor
+#   - Her Python version icin ayri ARN var
+#
+# Neden managed layer?
+#   - Docker ile build etme derdi yok
+#   - AWS guncelleme ve guvenlik yamalarini kendisi yapiyor
+#   - Production'da stabil ve test edilmis
+#
+# ARN referansi:
+#   https://aws-sdk-pandas.readthedocs.io/en/stable/layers.html
 ##############################################################################
 
 # -----------------------------------------------------------------
@@ -39,13 +45,15 @@ resource "aws_lambda_function" "json_to_parquet" {
   handler          = "handler.handler"
   runtime          = "python3.12"
 
-  role    = aws_iam_role.lambda_role.arn
-  timeout = var.lambda_timeout
+  role        = aws_iam_role.lambda_role.arn
+  timeout     = var.lambda_timeout
   memory_size = var.lambda_memory
 
-  # pandas + pyarrow layer
+  # AWS Managed Layer: AWSSDKPandas (pandas + pyarrow + numpy)
+  # Bu layer AWS tarafindan maintain ediliyor, biz build etmiyoruz.
+  # ARN formati: arn:aws:lambda:<REGION>:336392948345:layer:AWSSDKPandas-Python312:<VERSION>
   layers = [
-    aws_lambda_layer_version.pandas_layer.arn,
+    "arn:aws:lambda:${var.aws_region}:336392948345:layer:AWSSDKPandas-Python312:15",
   ]
 
   environment {
@@ -56,40 +64,6 @@ resource "aws_lambda_function" "json_to_parquet" {
 
   tags = {
     Name = "${var.project_name}-json-to-parquet-${var.environment}"
-  }
-}
-
-# -----------------------------------------------------------------
-# Lambda Layer - pandas + pyarrow
-#
-# ONEMLI: Bu layer'i kendin build etmen gerekiyor.
-# Lambda Linux (Amazon Linux 2023) uzerinde calisiyor,
-# macOS veya Windows'ta pip install yapip zip'lersen CALISMAZ.
-#
-# Layer build etme adimlar (Docker ile):
-#
-#   mkdir -p lambda/layers/pandas
-#   docker run --rm -v $(pwd)/lambda/layers/pandas:/out \
-#     public.ecr.aws/lambda/python:3.12 \
-#     bash -c "pip install pandas pyarrow -t /out/python && exit"
-#   cd lambda/layers/pandas && zip -r ../pandas-layer.zip python/
-#
-# Sonra bu zip dosyasini asagidaki resource'a ver.
-#
-# Alternatif: AWS'nin sagladigi managed layer'lari kullanabilirsin:
-#   arn:aws:lambda:eu-central-1:336392948345:layer:AWSSDKPandas-Python312:x
-#   Bu ARN bolgeye gore degisir, kontrol et:
-#   https://aws-sdk-pandas.readthedocs.io/en/stable/layers.html
-# -----------------------------------------------------------------
-resource "aws_lambda_layer_version" "pandas_layer" {
-  layer_name          = "${var.project_name}-pandas-pyarrow-${var.environment}"
-  description         = "pandas and pyarrow for Python 3.12"
-  filename            = "${path.module}/../lambda/layers/pandas-layer.zip"
-  compatible_runtimes = ["python3.12"]
-
-  lifecycle {
-    # Layer zip dosyasi degismezse yeniden olusturma
-    create_before_destroy = true
   }
 }
 
