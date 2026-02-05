@@ -40,6 +40,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "raw" {
     id     = "archive-old-raw-data"
     status = "Enabled"
 
+    filter {} # Tum dosyalara uygula
+
     transition {
       days          = 90
       storage_class = "STANDARD_IA"
@@ -88,6 +90,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "processed" {
   rule {
     id     = "archive-old-processed-data"
     status = "Enabled"
+
+    filter {} # Tum dosyalara uygula
 
     transition {
       days          = 90
