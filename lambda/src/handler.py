@@ -43,8 +43,10 @@ def handler(event, context):
         logger.info("Processing: s3://%s/%s", source_bucket, source_key)
 
         # 1. Raw JSON'u oku
+        # utf-8-sig: BOM (Byte Order Mark) varsa otomatik siler.
+        # BOM olmayan dosyalarda da sorunsuz calisir.
         response = s3_client.get_object(Bucket=source_bucket, Key=source_key)
-        raw_body = response["Body"].read().decode("utf-8")
+        raw_body = response["Body"].read().decode("utf-8-sig")
         data = json.loads(raw_body)
 
         if not data:
