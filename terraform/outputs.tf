@@ -18,8 +18,13 @@ output "processed_bucket_arn" {
 }
 
 output "raw_bucket_name" {
-  description = "Raw (JSON) S3 bucket adi (mevcut)"
-  value       = data.aws_s3_bucket.raw.id
+  description = "Raw (JSON) S3 bucket adi"
+  value       = aws_s3_bucket.raw.id
+}
+
+output "raw_bucket_arn" {
+  description = "Raw S3 bucket ARN"
+  value       = aws_s3_bucket.raw.arn
 }
 
 output "lambda_function_name" {

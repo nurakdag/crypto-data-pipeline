@@ -28,7 +28,7 @@ resource "aws_lambda_permission" "allow_s3_invoke" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.json_to_parquet.function_name
   principal     = "s3.amazonaws.com"
-  source_arn    = data.aws_s3_bucket.raw.arn
+  source_arn    = aws_s3_bucket.raw.arn
 }
 
 # -----------------------------------------------------------------
@@ -47,7 +47,7 @@ resource "aws_lambda_permission" "allow_s3_invoke" {
 # Bu durumda SNS/SQS fan-out pattern'e gecilmeli.
 # -----------------------------------------------------------------
 resource "aws_s3_bucket_notification" "raw_bucket_notification" {
-  bucket = data.aws_s3_bucket.raw.id
+  bucket = aws_s3_bucket.raw.id
 
   lambda_function {
     lambda_function_arn = aws_lambda_function.json_to_parquet.arn

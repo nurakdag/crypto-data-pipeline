@@ -32,12 +32,6 @@ variable "project_name" {
   default     = "crypto-data-pipeline"
 }
 
-variable "raw_bucket_name" {
-  description = "Mevcut raw S3 bucket adi (Airflow'un yazdigi bucket)"
-  type        = string
-  default     = "crypto-raw-dev-20260131"
-}
-
 variable "raw_prefix" {
   description = "Lambda'yi tetikleyecek S3 prefix (raw/ altindaki dosyalar)"
   type        = string

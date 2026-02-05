@@ -14,7 +14,7 @@ API_CONN_ID = "coingecko_api"
 S3_CONN_ID = "s3_conn"
 
 # Constants
-BUCKET_NAME ="crypto-raw-dev-20260131"
+BUCKET_NAME = "crypto-data-pipeline-raw-dev"
 SOURCE = "coingecko"
 DATASET = "coins_markets"
 

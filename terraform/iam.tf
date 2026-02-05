@@ -56,7 +56,7 @@ data "aws_iam_policy_document" "lambda_s3_read" {
       "s3:GetObject",
     ]
     resources = [
-      "${data.aws_s3_bucket.raw.arn}/raw/*",
+      "${aws_s3_bucket.raw.arn}/raw/*",
     ]
   }
 
@@ -66,7 +66,7 @@ data "aws_iam_policy_document" "lambda_s3_read" {
       "s3:ListBucket",
     ]
     resources = [
-      data.aws_s3_bucket.raw.arn,
+      aws_s3_bucket.raw.arn,
     ]
   }
 }
