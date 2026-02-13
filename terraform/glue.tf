@@ -19,6 +19,36 @@
 ##############################################################################
 
 # -----------------------------------------------------------------
+# Lake Formation Ayarlari
+#
+# ONEMLI: Yeni AWS hesaplarinda Lake Formation varsayilan olarak acik gelir.
+# Lake Formation, IAM'in USTUNE ekstra bir yetki katmani ekler.
+# IAM izin verse bile Lake Formation engelleyebilir.
+#
+# Asagidaki ayar Lake Formation'a diyor ki:
+#   "IAM yetkisi olan herkese Data Catalog erisimi ver"
+#
+# Bu olmadan Glue Crawler "Account is denied access" hatasi verir.
+# -----------------------------------------------------------------
+data "aws_caller_identity" "current" {}
+
+resource "aws_lakeformation_data_lake_settings" "default" {
+  admins = [
+    "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/terraform-deployer",
+  ]
+
+  create_database_default_permissions {
+    permissions = ["ALL"]
+    principal   = "IAM_ALLOWED_PRINCIPALS"
+  }
+
+  create_table_default_permissions {
+    permissions = ["ALL"]
+    principal   = "IAM_ALLOWED_PRINCIPALS"
+  }
+}
+
+# -----------------------------------------------------------------
 # Glue Catalog Database
 #
 # Athena'da "FROM crypto_db.tablo_adi" dediginde
@@ -28,6 +58,8 @@ resource "aws_glue_catalog_database" "crypto_db" {
   name = "${replace(var.project_name, "-", "_")}_${var.environment}"
 
   description = "Crypto data pipeline - processed Parquet tablolari (${var.environment})"
+
+  depends_on = [aws_lakeformation_data_lake_settings.default]
 }
 
 # -----------------------------------------------------------------
