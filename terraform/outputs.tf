@@ -56,9 +56,9 @@ output "glue_database_name" {
   value       = aws_glue_catalog_database.crypto_db.name
 }
 
-output "glue_table_name" {
-  description = "Glue tablo adi - Athena'da FROM crypto_db.<bu_isim> seklinde kullanilir"
-  value       = aws_glue_catalog_table.coins_markets.name
+output "glue_crawler_name" {
+  description = "Glue Crawler adi - elle calistirmak icin: aws glue start-crawler --name <bu_isim>"
+  value       = aws_glue_crawler.processed_crawler.name
 }
 
 output "athena_workgroup_name" {
