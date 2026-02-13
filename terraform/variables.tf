@@ -55,9 +55,3 @@ variable "lambda_memory" {
   type        = number
   default     = 512
 }
-
-variable "glue_crawler_schedule" {
-  description = "Glue Crawler cron schedule. Bos string = on-demand (elle calistir)"
-  type        = string
-  default     = "cron(0 * * * ? *)" # Saatte bir
-}
