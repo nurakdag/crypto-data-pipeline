@@ -46,3 +46,27 @@ output "lambda_log_group" {
   description = "CloudWatch log group adi"
   value       = aws_cloudwatch_log_group.lambda_logs.name
 }
+
+# -----------------------------------------------------------------
+# Glue & Athena Outputs
+# -----------------------------------------------------------------
+
+output "glue_database_name" {
+  description = "Glue Data Catalog database adi - Athena'da FROM <bu_isim>.tablo seklinde kullanilir"
+  value       = aws_glue_catalog_database.crypto_db.name
+}
+
+output "glue_crawler_name" {
+  description = "Glue Crawler adi - elle calistirmak icin: aws glue start-crawler --name <bu_isim>"
+  value       = aws_glue_crawler.processed_crawler.name
+}
+
+output "athena_workgroup_name" {
+  description = "Athena workgroup adi - sorgu calistirirken kullanilir"
+  value       = aws_athena_workgroup.crypto_workgroup.name
+}
+
+output "athena_results_bucket" {
+  description = "Athena sorgu sonuclarinin yazildigi S3 bucket"
+  value       = aws_s3_bucket.athena_results.id
+}
