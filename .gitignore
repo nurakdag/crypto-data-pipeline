@@ -1,0 +1,24 @@
+.git
+.env
+.DS_Store
+airflow_settings.yaml
+__pycache__/
+astro
+.venv
+airflow-webserver.pid
+webserver_config.py
+airflow.cfg
+airflow.db
+
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/terraform.tfstate.*.backup
+terraform/.terraform.lock.hcl
+terraform/*.tfplan
+terraform/test_data.json
+
+# Lambda build artifacts
+lambda/build/
+lambda/layers/
